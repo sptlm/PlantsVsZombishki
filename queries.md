@@ -1,4 +1,5 @@
 1) Выбрать логины тех работников, которые работают в пвз(Worker.pvz_id не равен 0)
+   
 $$
 \pi _{Workers.login} (\sigma _{pvz\_id\not\equiv0}(Workers))
 $$
