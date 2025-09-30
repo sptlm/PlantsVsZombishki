@@ -84,13 +84,13 @@ ALTER TABLE marketplace.workers
     ADD CONSTRAINT fk_workers_pvz_id FOREIGN KEY (pvz_id) REFERENCES marketplace.pvz(pvz_id);
 
 	
--- настройка внешних ключей других таблиц
-ALTER TABLE marketplace.shops
-  ADD CONSTRAINT uq_shops_owner_id UNIQUE (owner_id);
-ALTER TABLE marketplace.reviews
-  ADD CONSTRAINT uq_reviews_purchase_id UNIQUE (purchase_id);
-ALTER TABLE marketplace.profession
-  ADD CONSTRAINT uq_profession_promotion_id UNIQUE (purchase_id);
+-- настройка внешних ключей других таблиц  
+ALTER TABLE marketplace.shops    
+    ADD CONSTRAINT uq_shops_owner_id UNIQUE (owner_id);
+ALTER TABLE marketplace.reviews  
+    ADD CONSTRAINT uq_reviews_purchase_id UNIQUE (purchase_id);
+ALTER TABLE marketplace.profession   
+    ADD CONSTRAINT uq_profession_promotion_id UNIQUE (purchase_id);  
   
 ## Inserts
 
