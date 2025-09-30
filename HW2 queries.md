@@ -87,8 +87,10 @@ ALTER TABLE marketplace.workers
 -- настройка внешних ключей других таблиц  
 ALTER TABLE marketplace.shops    
     ADD CONSTRAINT uq_shops_owner_id UNIQUE (owner_id);
+	
 ALTER TABLE marketplace.reviews  
     ADD CONSTRAINT uq_reviews_purchase_id UNIQUE (purchase_id);
+	
 ALTER TABLE marketplace.profession   
     ADD CONSTRAINT uq_profession_promotion_id UNIQUE (purchase_id);  
   
