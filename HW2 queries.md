@@ -82,6 +82,16 @@ ALTER TABLE marketplace.workers
     ADD CONSTRAINT fk_workers_work_id FOREIGN KEY (work_id) REFERENCES marketplace.profession(profession_id),  
     ADD CONSTRAINT fk_workers_shop_id FOREIGN KEY (shop_id) REFERENCES marketplace.shops(shop_id),  
     ADD CONSTRAINT fk_workers_pvz_id FOREIGN KEY (pvz_id) REFERENCES marketplace.pvz(pvz_id);
+
+	
+-- настройка внешних ключей других таблиц
+ALTER TABLE marketplace.shops
+  ADD CONSTRAINT uq_shops_owner_id UNIQUE (owner_id);
+ALTER TABLE marketplace.reviews
+  ADD CONSTRAINT uq_reviews_purchase_id UNIQUE (purchase_id);
+ALTER TABLE marketplace.profession
+  ADD CONSTRAINT uq_profession_promotion_id UNIQUE (purchase_id);
+  
 ## Inserts
 
 - INSERT INTO marketplace.workers (login, password, work_id, shop_id, pvz_id) VALUES ('sanya','qwerty1',1,NULL,1);
