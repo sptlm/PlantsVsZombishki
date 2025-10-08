@@ -1,5 +1,6 @@
-#Нарушения:
-##1НФ (Первой нормальной формы)
+# Нарушения:
+## 1НФ (Первой нормальной формы)
+
 ```
 CREATE TABLE marketplace.workers (
     worker_id SERIAL PRIMARY KEY,
@@ -10,7 +11,9 @@ CREATE TABLE marketplace.workers (
     pvz_id INT      -- пункт выдачи
 );
 ```
+
 Место работы "размазывается" на несколько полей
+
 ```
 -- 9. Таблица назначений работников (решает проблему 1НФ)
 CREATE TABLE marketplace.worker_assignments (
@@ -23,7 +26,7 @@ CREATE TABLE marketplace.worker_assignments (
 );
 ```
 
-##2 НФ
+## 2 НФ
 ```
 CREATE TABLE marketplace.reviews (
     review_id SERIAL PRIMARY KEY,      -- первичный ключ
@@ -33,7 +36,9 @@ CREATE TABLE marketplace.reviews (
     date DATE DEFAULT CURRENT_DATE
 );
 ```
+
 Решение
+
 ```
 CREATE TABLE marketplace.reviews (
     review_id SERIAL PRIMARY KEY,
@@ -42,7 +47,9 @@ CREATE TABLE marketplace.reviews (
     description TEXT
 );
 ```
-##3 НФ
+
+## 3 НФ
+
 ```
 CREATE TABLE marketplace.profession (
     profession_id SERIAL PRIMARY KEY,  -- первичный ключ
@@ -51,8 +58,11 @@ CREATE TABLE marketplace.profession (
     promotion_id INT REFERENCES marketplace.profession(profession_id)
 );
 ```
+
 Проблема: Циклическая транзитивная зависимость
+
 Решение:
+
 ```
 CREATE TABLE marketplace.career_path (
     path_id SERIAL PRIMARY KEY,
