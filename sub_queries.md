@@ -109,7 +109,7 @@ WHERE b.buyer_id IN (SELECT DISTINCT p.buyer_id
 	FROM marketplace.purchases p   
 	JOIN marketplace.items i 
 	ON i.item_id = p.item_id   
-	WHERE i.shop_id IN (SELECT s.shop_id     FROM marketplace.shops s     WHERE s.name LIKE '%Electronics%'   ) ) ORDER BY b.buyer_id;
+	WHERE i.shop_id IN (SELECT s.shop_id FROM marketplace.shops s WHERE s.name LIKE 'Магазин электроники')) ORDER BY b.buyer_id;
 ```
 ​​![](assets/HW5/3.2.png)
 
@@ -148,7 +148,7 @@ SELECT i.category_id, COUNT(*) AS purchases_count
 FROM marketplace.purchases p
 JOIN marketplace.items i ON i.item_id = p.item_id
 GROUP BY i.category_id
-HAVING COUNT(*) > (
+HAVING COUNT(*) >= (
   SELECT AVG(cnt) FROM (
     SELECT COUNT(*) AS cnt
     FROM marketplace.purchases
