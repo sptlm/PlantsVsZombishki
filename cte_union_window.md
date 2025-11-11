@@ -12,6 +12,8 @@ SELECT
 FROM marketplace.profession
 ORDER BY salary;
 ```
+<img width="656" height="172" alt="image" src="https://github.com/user-attachments/assets/d4e121b9-522b-45fd-b4cd-1dbdb573a5ee" />
+
 ## 2. Накопленная сумма цен товаров по магазинам
 ```sql
 SELECT 
@@ -26,6 +28,8 @@ SELECT
 FROM marketplace.items
 ORDER BY shop_id, price;
 ```
+<img width="634" height="299" alt="image" src="https://github.com/user-attachments/assets/2b42d965-5003-4dde-b313-9b68b05dc9fe" />
+
 # RANGE
 ## 1. Профессии в диапазоне ±5000 от текущей зарплаты
 ```sql
@@ -40,6 +44,8 @@ SELECT
 FROM marketplace.profession
 ORDER BY salary;
 ```
+<img width="648" height="169" alt="image" src="https://github.com/user-attachments/assets/79e7ead2-3bb8-4fe8-b575-2fe7988b47d8" />
+
 ## 2. Средние рейтинги в пределах ±1 балла
 ```sql
 SELECT 
@@ -53,6 +59,7 @@ SELECT
 FROM marketplace.reviews
 ORDER BY rating;
 ```
+<img width="651" height="302" alt="image" src="https://github.com/user-attachments/assets/bf006675-5fa2-4815-99fb-c40ad5c3992e" />
 
 # LAG
 ## Сравнение зарплаты с предыдущими по зарплате + сортировка для удобного вывода
@@ -66,6 +73,7 @@ SELECT
 FROM marketplace.profession p
 ORDER BY p.salary;
 ```
+<img width="739" height="177" alt="image" src="https://github.com/user-attachments/assets/70490682-178e-4f31-94af-4ba1128095d5" />
 
 # LEAD
 ## Следующая покупка пользователя
@@ -86,6 +94,7 @@ SELECT
 FROM marketplace.purchases
 ORDER BY buyer_id, purchase_date;
 ```
+<img width="1014" height="301" alt="image" src="https://github.com/user-attachments/assets/dbd4f002-4c4f-437f-bdc9-ca6e6536ad4c" />
 
 # FIRST_VALUE
 ## Самый дешевый товар в категории
@@ -106,6 +115,7 @@ SELECT
 FROM marketplace.items
 ORDER BY category_id, price;
 ```
+<img width="997" height="298" alt="image" src="https://github.com/user-attachments/assets/b7a3be61-c3b6-4021-8f66-52f2a67679ad" />
 
 # LAST_VALUE
 ## Самый дорогой товар в категории
@@ -128,3 +138,4 @@ SELECT
 FROM marketplace.items
 ORDER BY category_id, price;
 ```
+<img width="1087" height="299" alt="image" src="https://github.com/user-attachments/assets/e48e5155-f076-4de0-933b-022d45535efc" />
