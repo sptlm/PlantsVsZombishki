@@ -1,3 +1,100 @@
+# UNION
+## 1. Объединение логинов работников и покупателей
+
+```sql
+SELECT login, 'worker' AS user_type FROM marketplace.workers
+UNION
+SELECT login, 'buyer' AS user_type FROM marketplace.buyers;
+```
+## 2. Товары из двух категорий
+
+```sql
+SELECT item_id, name, price FROM marketplace.items WHERE category_id = 1
+UNION
+SELECT item_id, name, price FROM marketplace.items WHERE category_id = 2;
+```
+## 3. Все существующие статусы покупок и заказов
+
+```sql
+SELECT DISTINCT status, 'purchase' AS type FROM marketplace.purchases
+UNION
+SELECT DISTINCT status, 'orders' FROM marketplace.orders;
+```
+# INTERSECT
+## 1. Работники, которые также являются владельцами магазинов
+
+```sql
+SELECT worker_id FROM marketplace.workers
+INTERSECT
+SELECT owner_id FROM marketplace.shops WHERE owner_id IS NOT NULL;
+```
+## 2. Категории товаров, по которым есть и товары, и заказы
+
+```sql
+SELECT category_id FROM marketplace.items
+INTERSECT
+SELECT i.category_id
+FROM marketplace.items i
+JOIN marketplace.purchases p ON i.item_id = p.item_id;
+```
+## 3. ПВЗ, используемые в заказах и имеющие назначенных работников
+
+```sql
+SELECT pvz_id FROM marketplace.orders
+INTERSECT
+SELECT place_id FROM marketplace.worker_assignments WHERE place_type = 'pvz';
+```
+# EXCEPT
+## 1. Работники без назначений
+
+```sql
+SELECT worker_id FROM marketplace.workers
+EXCEPT
+SELECT worker_id FROM marketplace.worker_assignments;
+```
+## 2. Товары без покупок
+
+```sql
+SELECT item_id FROM marketplace.items
+EXCEPT
+SELECT item_id FROM marketplace.purchases;
+```
+## 3. Покупатели без отзывов
+
+```sql
+SELECT buyer_id FROM marketplace.buyers
+EXCEPT
+SELECT p.buyer_id
+FROM marketplace.purchases p
+JOIN marketplace.reviews r ON p.purchase_id = r.purchase_id;
+```
+# PARTITION BY + ORDER BY
+## 1. Ранжирование товаров по цене внутри каждой категории
+
+```sql
+SELECT
+    item_id,
+    name,
+    category_id,
+    price,
+    ROW_NUMBER() OVER (PARTITION BY category_id ORDER BY price DESC) AS price_rank
+FROM marketplace.items
+ORDER BY category_id, price_rank;
+```
+## 2. Нумерация покупок для каждого покупателя по дате
+
+```sql
+SELECT
+    purchase_id,
+    buyer_id,
+    item_id,
+    purchase_date,
+    status,
+    ROW_NUMBER() OVER (PARTITION BY buyer_id ORDER BY purchase_date) AS purchase_number
+FROM marketplace.purchases
+ORDER BY buyer_id, purchase_number;
+```
+
 # ROWS
 ## 1. Cкользящее среднее зарплаты по профессиям
 ```sql
