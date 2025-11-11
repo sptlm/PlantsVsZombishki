@@ -6,6 +6,8 @@ SELECT login, 'worker' AS user_type FROM marketplace.workers
 UNION
 SELECT login, 'buyer' AS user_type FROM marketplace.buyers;
 ```
+<img width="375" height="176" alt="image" src="https://github.com/user-attachments/assets/2756096e-c970-47bf-b069-80234d98bf05" />
+
 ## 2. Товары из двух категорий
 
 ```sql
@@ -13,6 +15,8 @@ SELECT item_id, name, price FROM marketplace.items WHERE category_id = 1
 UNION
 SELECT item_id, name, price FROM marketplace.items WHERE category_id = 2;
 ```
+<img width="691" height="175" alt="image" src="https://github.com/user-attachments/assets/45edfe42-ebd6-4796-993c-05fce85a321d" />
+
 ## 3. Все существующие статусы покупок и заказов
 
 ```sql
@@ -20,6 +24,8 @@ SELECT DISTINCT status, 'purchase' AS type FROM marketplace.purchases
 UNION
 SELECT DISTINCT status, 'orders' FROM marketplace.orders;
 ```
+<img width="328" height="204" alt="image" src="https://github.com/user-attachments/assets/713e2806-a393-47f9-9316-eb2bb87e43cc" />
+
 # INTERSECT
 ## 1. Работники, которые также являются владельцами магазинов
 
@@ -28,6 +34,8 @@ SELECT worker_id FROM marketplace.workers
 INTERSECT
 SELECT owner_id FROM marketplace.shops WHERE owner_id IS NOT NULL;
 ```
+<img width="199" height="176" alt="image" src="https://github.com/user-attachments/assets/73aa6d82-c1b9-4678-840f-ce1b95b6dceb" />
+
 ## 2. Категории товаров, по которым есть и товары, и заказы
 
 ```sql
@@ -37,6 +45,8 @@ SELECT i.category_id
 FROM marketplace.items i
 JOIN marketplace.purchases p ON i.item_id = p.item_id;
 ```
+<img width="206" height="177" alt="image" src="https://github.com/user-attachments/assets/1084fd41-7384-43cc-b967-7d9af943c0d6" />
+
 ## 3. ПВЗ, используемые в заказах и имеющие назначенных работников
 
 ```sql
@@ -44,6 +54,8 @@ SELECT pvz_id FROM marketplace.orders
 INTERSECT
 SELECT place_id FROM marketplace.worker_assignments WHERE place_type = 'pvz';
 ```
+<img width="167" height="206" alt="image" src="https://github.com/user-attachments/assets/18ce9c44-7393-4736-8908-3ffaab77f007" />
+
 # EXCEPT
 ## 1. Работники без назначений
 
@@ -52,6 +64,8 @@ SELECT worker_id FROM marketplace.workers
 EXCEPT
 SELECT worker_id FROM marketplace.worker_assignments;
 ```
+<img width="191" height="182" alt="image" src="https://github.com/user-attachments/assets/305de34b-915a-4ead-b244-6107aea2994e" />
+
 ## 2. Товары без покупок
 
 ```sql
@@ -59,6 +73,8 @@ SELECT item_id FROM marketplace.items
 EXCEPT
 SELECT item_id FROM marketplace.purchases;
 ```
+<img width="180" height="173" alt="image" src="https://github.com/user-attachments/assets/95bdb333-c62a-4e68-92c6-f541dab72c36" />
+
 ## 3. Покупатели без отзывов
 
 ```sql
@@ -68,6 +84,8 @@ SELECT p.buyer_id
 FROM marketplace.purchases p
 JOIN marketplace.reviews r ON p.purchase_id = r.purchase_id;
 ```
+<img width="180" height="57" alt="image" src="https://github.com/user-attachments/assets/82b0ad1e-7309-462c-9fd1-67083d769f19" />
+
 # PARTITION BY + ORDER BY
 ## 1. Ранжирование товаров по цене внутри каждой категории
 
@@ -81,6 +99,8 @@ SELECT
 FROM marketplace.items
 ORDER BY category_id, price_rank;
 ```
+<img width="927" height="170" alt="image" src="https://github.com/user-attachments/assets/5cd7442b-c7cc-4dc9-8e99-82c12fddaa4c" />
+
 ## 2. Нумерация покупок для каждого покупателя по дате
 
 ```sql
@@ -94,6 +114,8 @@ SELECT
 FROM marketplace.purchases
 ORDER BY buyer_id, purchase_number;
 ```
+<img width="1072" height="179" alt="image" src="https://github.com/user-attachments/assets/03eddd04-85fb-4edc-820b-47214ba521ee" />
+
 
 # ROWS
 ## 1. Cкользящее среднее зарплаты по профессиям
