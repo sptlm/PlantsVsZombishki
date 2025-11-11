@@ -64,7 +64,7 @@ INSERT INTO marketplace.items (shop_id, name, description, category_id, price) V
 (1, 'Ноутбук', 'Мощный ноутбук', 1, 50000.00),
 (2, 'Книга Java', 'Учебник по Java', 2, 1200.00),
 (3, 'Футболка', 'Стильная футболка', 3, 890.00),
-(4, 'Сыр', 'Рокфор 200г', 4, 370.00);
+(4, 'Сыр', 'Рокфор 200г', 4, 370.00),
 (1, 'Смартфон', 'Бюджетный', 1, 15000),
 (1, 'Планшет', '10 дюймов', 1, 25000),
 (2, 'Книга Python', 'Учебник', 2, 800),
@@ -77,20 +77,32 @@ INSERT INTO marketplace.worker_assignments (worker_id, place_type, place_id, wor
 (4, 'pvz', 2, 4);
 
 INSERT INTO marketplace.purchases (item_id, buyer_id, purchase_date, status) VALUES
-(1, 1, NOW(), 'completed'),
-(2, 2, NOW(), 'pending'),
-(3, 3, NOW(), 'cancelled'),
-(4, 4, NOW(), 'completed');
+(1, 1, NOW() - INTERVAL '5 days', 'completed'),
+(2, 2, NOW() - INTERVAL '4 days', 'completed'),
+(3, 3, NOW() - INTERVAL '3 days', 'completed'),
+(4, 4, NOW() - INTERVAL '2 days', 'completed'),
+(5, 1, NOW() - INTERVAL '1 day', 'completed'),
+(6, 2, NOW(), 'completed'),
+(7, 3, NOW(), 'completed'),
+(8, 4, NOW(), 'completed');
 
 INSERT INTO marketplace.orders (purchase_id, pvz_id, status, order_date) VALUES
-(1, 1, 'created', NOW()),
-(2, 2, 'delivered', NOW()),
-(3, 3, 'cancelled', NOW()),
-(4, 4, 'created', NOW());
+(1, 1, 'delivered', NOW() - INTERVAL '5 days'),
+(2, 2, 'delivered', NOW() - INTERVAL '4 days'),
+(3, 3, 'delivered', NOW() - INTERVAL '3 days'),
+(4, 4, 'delivered', NOW() - INTERVAL '2 days'),
+(5, 1, 'created', NOW() - INTERVAL '1 day'),
+(6, 2, 'created', NOW()),
+(7, 3, 'created', NOW()),
+(8, 4, 'created', NOW());
 
 INSERT INTO marketplace.reviews (purchase_id, rating, description) VALUES
 (1, 5, 'Отлично все понравилось'),
 (2, 4, 'Хороший товар'),
 (3, 2, 'Плохая упаковка'),
-(4, 3, 'Средне, ожидал большего');
+(4, 3, 'Средне, ожидал большего'),
+(5, 5, 'Супре!!!!'),
+(6, 4, 'Норм'),
+(7, 2, 'Bad'),
+(8, 5, 'Отличное качество');
 ```
