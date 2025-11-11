@@ -1,3 +1,98 @@
+# CTE
+
+## 1. Найти "лояльных" покупателей (более 2	покупок) и дату их последней покупки.
+```sql
+WITH LoyalBuyers AS (
+    SELECT buyer_id 
+    FROM marketplace.purchases
+    GROUP BY buyer_id
+    HAVING COUNT(purchase_id) > 2
+)
+
+SELECT b.login, MAX(p.purchase_date) AS last_purchase_date
+FROM marketplace.purchases p
+JOIN LoyalBuyers lb ON p.buyer_id = lb.buyer_id 
+JOIN marketplace.buyers b ON p.buyer_id = b.buyer_id 
+GROUP BY b.login, p.buyer_id
+ORDER BY last_purchase_date DESC;
+```
+<img width="398" height="294" alt="изображение" src="https://github.com/user-attachments/assets/75a85f51-392f-4930-ae0c-667d72b078fc" />
+
+
+## 2. ​Определить самый прибыльный магазин.
+```sql
+WITH ProfitShops AS (
+	SELECT sh.shop_id, SUM(i.price) as total_profit
+	FROM marketplace.purchases p
+	JOIN marketplace.items i ON p.item_id = i.item_id
+	JOIN marketplace.shops sh ON i.shop_id = sh.shop_id
+	GROUP BY sh.shop_id
+)
+
+SELECT sh.name, ps.total_profit
+FROM ProfitShops ps
+JOIN marketplace.shops sh ON sh.shop_id = ps.shop_id
+ORDER BY ps.total_profit DESC
+LIMIT 1;
+```
+<img width="299" height="74" alt="изображение" src="https://github.com/user-attachments/assets/d6f20e73-cc67-4ade-a281-cbc408be7ee3" />
+
+## 3. Найти работников в ПВЗ с наибольшим количеством заказов.
+```sql
+WITH PvzWorkersOrders AS (
+	SELECT w.worker_id, COUNT(o.order_id) as orders_count
+	FROM marketplace.orders o
+	JOIN marketplace.worker_assignments wa ON o.pvz_id = wa.place_id
+	JOIN marketplace.workers w ON wa.worker_id = w.worker_id
+	GROUP BY w.worker_id
+)
+
+SELECT w.login, pwo.orders_count
+FROM PvzWorkersOrders pwo
+JOIN marketplace.workers w ON pwo.worker_id = w.worker_id
+WHERE pwo.orders_count = (SELECT MAX(orders_count) FROM PvzWorkersOrders)
+ORDER BY w.login;
+```
+<img width="309" height="267" alt="изображение" src="https://github.com/user-attachments/assets/55d4e943-77e4-4b33-af63-717c230d13a3" />
+
+## 4. Получить список товаров из самой "дорогой" категории (по средней цене).
+```sql
+WITH CategoryCost AS (
+	SELECT c.category_id, AVG(i.price) as avg_category_cost
+	FROM marketplace.category_of_item c 
+	JOIN marketplace.items i ON c.category_id = i.category_id
+	GROUP BY c.category_id
+)
+
+SELECT i.item_id, i.name, c.name, cc.avg_category_cost
+FROM marketplace.category_of_item c 
+JOIN marketplace.items i ON c.category_id = i.category_id
+JOIN CategoryCost cc ON c.category_id = cc.category_id
+WHERE cc.avg_category_cost = (SELECT MAX(avg_category_cost) FROM CategoryCost);
+```
+<img width="635" height="339" alt="изображение" src="https://github.com/user-attachments/assets/5f1a370a-cd40-4be9-8487-7647321ee2b8" />
+
+## 5. Найти магазины с количеством товаров выше среднего  
+```sql
+WITH ShopItemCounts AS (
+    SELECT shop_id, COUNT(item_id) AS item_count
+    FROM marketplace.items
+    GROUP BY shop_id
+),
+AverageItemCount AS (
+    SELECT AVG(item_count) AS avg_count
+    FROM ShopItemCounts
+)
+
+SELECT s.name, sic.item_count, aic.avg_count
+FROM ShopItemCounts sic
+JOIN marketplace.shops s ON sic.shop_id = s.shop_id
+CROSS JOIN AverageItemCount aic
+WHERE sic.item_count > aic.avg_count
+ORDER BY sic.item_count DESC;
+```
+<img width="433" height="170" alt="изображение" src="https://github.com/user-attachments/assets/c30a3abe-5d4b-409d-9e27-c6be6d3ebd78" />
+
 # UNION
 ## 1. Объединение логинов работников и покупателей
 
@@ -85,6 +180,23 @@ FROM marketplace.purchases p
 JOIN marketplace.reviews r ON p.purchase_id = r.purchase_id;
 ```
 <img width="180" height="57" alt="image" src="https://github.com/user-attachments/assets/82b0ad1e-7309-462c-9fd1-67083d769f19" />
+
+# PARTITION BY
+## 1. Сравнить цену каждого товара со средней ценой в его категории. 
+```sql
+SELECT name, price, category_id, AVG(price) OVER (PARTITION BY category_id) AS avg_price_in_category
+FROM marketplace.items;
+```
+<img width="651" height="467" alt="изображение" src="https://github.com/user-attachments/assets/cf5987b3-22fc-47ee-89da-ab0c8a31507a" />
+
+## 2. Показать каждую покупку и среднюю цену всех покупок этого покупателя
+```sql
+SELECT b.login, i.name, i.price, AVG(i.price) OVER (PARTITION BY p.buyer_id) as avg_purchase_price
+FROM marketplace.purchases p
+JOIN marketplace.buyers b ON p.buyer_id = b.buyer_id
+JOIN marketplace.items i ON p.item_id = i.item_id;
+```
+<img width="730" height="466" alt="изображение" src="https://github.com/user-attachments/assets/578cdb99-0679-409b-a9d7-5fc9fb87509c" />
 
 # PARTITION BY + ORDER BY
 ## 1. Ранжирование товаров по цене внутри каждой категории
@@ -179,6 +291,33 @@ FROM marketplace.reviews
 ORDER BY rating;
 ```
 <img width="651" height="302" alt="image" src="https://github.com/user-attachments/assets/bf006675-5fa2-4815-99fb-c40ad5c3992e" />
+
+# ROW_NUMBER()
+## 1. Пронумеровать всех работников в алфавитном порядке.  
+```sql
+SELECT login, ROW_NUMBER() OVER (ORDER BY login ASC) AS row_num
+FROM marketplace.workers;
+```
+<img width="291" height="291" alt="изображение" src="https://github.com/user-attachments/assets/ae6e9990-3c73-405f-99e1-093a8ca01fae" />
+
+# RANK()
+## 1. Ранжировать товары по цене от самого дорогого к самому дешевому.  
+```sql
+SELECT name, price, RANK() OVER (ORDER BY price DESC) as price_rank
+FROM marketplace.items
+ORDER BY price_rank;
+```
+<img width="488" height="394" alt="изображение" src="https://github.com/user-attachments/assets/f7faa405-16f5-4daf-85a5-cba8c2c67b5d" />
+
+# DENSE_RANK()
+## 1. Ранжировать профессии по уровню зарплаты.  
+```sql
+SELECT name, salary, DENSE_RANK() OVER (ORDER BY salary DESC) as salary_rank
+FROM marketplace.profession
+ORDER BY salary_rank;
+```
+<img width="487" height="420" alt="изображение" src="https://github.com/user-attachments/assets/44db103a-2a27-4c69-86d8-a4318867dee0" />
+
 
 # LAG
 ## Сравнение зарплаты с предыдущими по зарплате + сортировка для удобного вывода
