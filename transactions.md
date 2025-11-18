@@ -312,6 +312,64 @@ COMMIT;
 
 ***
 
+## SERIALIZABLE:
+Смоделируй конфликт: две транзакции вставляют одинаковые данные.
+Поймай ошибку could not serialize access due to concurrent update и повтори транзакцию.
+
+Транзакция T1 - Начало
+```sql
+BEGIN;
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+```
+Транзакция T1 - Проверка существующих данных
+
+```sql
+SELECT login FROM marketplace.workers WHERE login LIKE 'serial_worker%';
+```
+<img width="257" height="171" alt="image" src="https://github.com/user-attachments/assets/24dc8471-c852-44ef-80bd-271268800876" />
+
+
+Транзакция T1 - Вставка нового работника
+```sql
+INSERT INTO marketplace.workers (login, password_hash, salt)
+VALUES ('serial_worker_001', 'hash_serial_001', 'salt_serial_001');
+```
+Транзакция T2 - Начало
+```sql
+BEGIN;
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+```
+Транзакция T2 - Проверка существующих данных
+```sql
+SELECT login FROM marketplace.workers WHERE login LIKE 'serial_worker%';
+```
+<img width="257" height="171" alt="image" src="https://github.com/user-attachments/assets/0bd6ed18-3e48-47b7-83d1-7705b4946eb6" />
+
+Транзакция T2 - Вставка того же работника
+```sql
+INSERT INTO marketplace.workers (login, password_hash, salt)
+VALUES ('serial_worker_001', 'hash_serial_001', 'salt_serial_001');
+```
+Транзакция T1 - Попытка коммита (УСПЕХ)
+```sql
+COMMIT;
+```
+Транзакция T2 - Попытка коммита (ОШИБКА)
+```sql
+COMMIT;
+```
+
+Результат:
+
+<img width="921" height="269" alt="image" src="https://github.com/user-attachments/assets/811a3d64-332e-4097-85a3-29453c105f0c" />
+
+
+**Описание результатов**
+При одновременной вставке одинаковых данных в SERIALIZABLE режиме одна из транзакций завершается ошибкой сериализации.
+
+**ВЫВОД**
+SERIALIZABLE уровень изоляции предотвращает конфликты параллельных транзакций, принудительно прерывая одну из них. Требуется обработка ошибок и перезапуск транзакций в приложении.
+
 ## **SAVEPOINT**
 
 ### **Транзакция с одной точкой сохранения**
