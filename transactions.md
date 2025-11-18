@@ -181,8 +181,11 @@ SELECT name, salary FROM marketplace.profession WHERE name = 'Рекрутер';
 COMMIT;
 ```
 <img width="337" height="85" alt="image" src="https://github.com/user-attachments/assets/e26ed08a-ee15-45e7-933c-873620a99fab" />
+
+
 **Описание результатов**
 Видим, что данные в T2 обновились только после COMMIT в T1, несмотря на выставленный уровень READ UNCOMMITTED
+
 **ВЫВОД**
 postgres не разрешает "грязные данные" даже с read uncommited
 
@@ -213,8 +216,12 @@ COMMIT;
 
 Второе чтение:
 <img width="343" height="86" alt="image" src="https://github.com/user-attachments/assets/de533232-6e95-4849-ae52-a4bc5405e005" />
+
+
 **Описание результатов**
 Данные поменялись при выполнении запроса и результаты запроса поменялись
+
+
 **ВЫВОД**
 Если во время выполнения T1, другая транзакция изменит данные, то T1 будет использовать изменённые данные
 
