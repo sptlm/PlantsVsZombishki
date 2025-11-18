@@ -152,6 +152,71 @@ COMMIT;
 Результат: запросы транзакции откатились, ничего в таблице не поменялось
 <img width="809" height="97" alt="image" src="https://github.com/user-attachments/assets/1f7e25d6-5e00-4fae-ae73-fbca231811f6" />
 <img width="797" height="109" alt="no car path" src="https://github.com/user-attachments/assets/fdc8e654-f17e-44c4-9223-284bac5bf0a4" />
+## 1.READ UNCOMMITTED
+
+### 1.1 Грязные данные
+#### T1
+```sql
+BEGIN;
+UPDATE marketplace.profession SET salary = 99999 WHERE name = 'Рекрутер';
+
+```
+#### T2
+```sql
+BEGIN;
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+SELECT name, salary FROM marketplace.profession WHERE name = 'Рекрутер';
+```
+<img width="341" height="84" alt="image" src="https://github.com/user-attachments/assets/4cd60a55-5d96-41b7-9e78-e4da82cebf30" />
+
+#### T1
+
+```sql
+COMMIT;
+```
+
+#### T2
+```sql
+SELECT name, salary FROM marketplace.profession WHERE name = 'Рекрутер';
+COMMIT;
+```
+<img width="337" height="85" alt="image" src="https://github.com/user-attachments/assets/e26ed08a-ee15-45e7-933c-873620a99fab" />
+**Описание результатов**
+Видим, что данные в T2 обновились только после COMMIT в T1, несмотря на выставленный уровень READ UNCOMMITTED
+**ВЫВОД**
+postgres не разрешает "грязные данные" даже с read uncommited
+
+## 2.READ COMMITTED: неповторяющееся чтение
+
+#### T1
+```sql
+BEGIN;
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+
+-- Первое чтение
+SELECT name, salary FROM marketplace.profession WHERE name = 'HR специалист';
+
+-- Второе чтение
+SELECT name, salary FROM marketplace.profession WHERE name = 'HR специалист';
+
+COMMIT;
+```
+Если что этот запрос разбивается на 2
+#### T2
+```sql
+BEGIN;
+UPDATE marketplace.profession SET salary = 120000 WHERE name = 'HR специалист';
+COMMIT;
+```
+Первое чтение:
+<img width="344" height="81" alt="image" src="https://github.com/user-attachments/assets/7d9ea3b7-733a-446b-9d61-ff298c1c169d" />
+
+Второе чтение:
+<img width="343" height="86" alt="image" src="https://github.com/user-attachments/assets/de533232-6e95-4849-ae52-a4bc5405e005" />
+**Описание результатов**
+Данные поменялись при выполнении запроса и результаты запроса поменялись
+**ВЫВОД**
+Если во время выполнения T1, другая транзакция изменит данные, то T1 будет использовать изменённые данные
 
 
 ### **Уровень изоляции: REPEATABLE READ**
