@@ -363,6 +363,20 @@ COMMIT;
 
 <img width="921" height="269" alt="image" src="https://github.com/user-attachments/assets/811a3d64-332e-4097-85a3-29453c105f0c" />
 
+После повторения транзакции (если что перед этим сделал rollback)
+
+```sql
+BEGIN;
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+SELECT login FROM marketplace.workers WHERE login LIKE 'serial_worker%';
+INSERT INTO marketplace.workers (login, password_hash, salt)
+VALUES ('serial_worker_001', 'hash_serial_001', 'salt_serial_001');
+COMMIT;
+```
+
+<img width="886" height="241" alt="image" src="https://github.com/user-attachments/assets/b6b87c6b-e959-43ed-8985-2f6253e35ca8" />
+
+
 
 **Описание результатов**
 При одновременной вставке одинаковых данных в SERIALIZABLE режиме одна из транзакций завершается ошибкой сериализации.
