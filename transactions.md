@@ -225,10 +225,11 @@ COMMIT;
 **ВЫВОД**
 Если во время выполнения T1, другая транзакция изменит данные, то T1 будет использовать изменённые данные
 
+***
 
-### **Уровень изоляции: REPEATABLE READ**
+## **REPEATABLE READ**
 
-#### **Проверка, что T1 не видит изменений от T2 (Non-Repeatable Read)**
+### **Проверка, что T1 не видит изменений от T2 (Non-Repeatable Read)**
 
 
 **Транзакция T1:**
@@ -268,7 +269,7 @@ COMMIT;
 
 ***
 
-#### **Проверка на "фантомное чтение" (Phantom Read)**
+### **Проверка на "фантомное чтение" (Phantom Read)**
 
 **Транзакция T1:**
 ```sql
@@ -296,13 +297,13 @@ COMMIT;
 ```
 
 **Краткое описание результата:**
-    Первый `SELECT COUNT(*)` в T1 вернул `12`. После того как T2 добавила новый товар в ту же категорию и закоммитила транзакцию, второй `SELECT COUNT(*)` в T1 снова вернул `12`. Новая строка ("фантом") не появилась в наборе данных транзакции T1.
+    Первый `SELECT COUNT(*)` в T1 вернул `12`. После того как T2 добавила новый товар в ту же категорию и закоммитила транзакцию, второй `SELECT COUNT(*)` в T1 снова вернул `12`. Новая строка ("фантом") не появилась в наборе данных транзакции T1.  
 
-<img width="115" height="101" alt="изображение" src="https://github.com/user-attachments/assets/e22d26f7-27b7-4266-b216-5c55da21652f" />
-После Т2 количество стало:
-<img width="113" height="99" alt="изображение" src="https://github.com/user-attachments/assets/b676bd49-6130-46ea-898f-4819737b1fb7" />
-Повторный селект в рамках Т1:
-<img width="117" height="127" alt="изображение" src="https://github.com/user-attachments/assets/56aa0264-8df2-423b-9ec2-b6f1ee552267" />
+<img width="115" height="101" alt="изображение" src="https://github.com/user-attachments/assets/e22d26f7-27b7-4266-b216-5c55da21652f" />   
+После Т2 количество стало:  
+<img width="113" height="99" alt="изображение" src="https://github.com/user-attachments/assets/b676bd49-6130-46ea-898f-4819737b1fb7" />   
+Повторный селект в рамках Т1:   
+<img width="117" height="127" alt="изображение" src="https://github.com/user-attachments/assets/56aa0264-8df2-423b-9ec2-b6f1ee552267" />  
 
 
 
@@ -311,9 +312,9 @@ COMMIT;
 
 ***
 
-### **SAVEPOINT**
+## **SAVEPOINT**
 
-#### **Транзакция с одной точкой сохранения**
+### **Транзакция с одной точкой сохранения**
 
 
 ```sql
@@ -357,7 +358,7 @@ COMMIT;
 
 ***
 
-#### **Транзакция с двумя точками сохранения**
+### **Транзакция с двумя точками сохранения**
 
 
 ```sql
@@ -370,7 +371,7 @@ COMMIT;
     SAVEPOINT purchase_created;
 
     -- Создаем связанный с покупкой заказ.
-    INSERT INTO marketplace.orders (purchase_id, pvz_id, status) VALUES (52, 1, 'created');
+    INSERT INTO marketplace.orders (purchase_id, pvz_id, status) VALUES (51, 1, 'created');
 
     -- Устанавливаем вторую точку сохранения.
     SAVEPOINT order_created;
@@ -393,6 +394,13 @@ COMMIT;
 
 **Краткое описание результата:**
     Первый проверочный `SELECT` успешно нашел запись о покупке с `purchase_id = 10`. Второй `SELECT` не вернул ни одной строки, подтверждая, что запись о заказе, созданная после `SAVEPOINT purchase_created`, была отменена.
+
+**До запроса:**  
+![Без имени](https://github.com/user-attachments/assets/7415d04b-3300-4994-9440-9cefc1833c88)
+<img width="649" height="45" alt="Без имени" src="https://github.com/user-attachments/assets/6806857e-6c6f-4a30-aae1-1cd55f69969a" />  
+**После выполнения:**  
+<img width="632" height="76" alt="Без имени" src="https://github.com/user-attachments/assets/003ce35c-a661-442f-8a5c-9a5676b88f37" />
+<img width="645" height="47" alt="Без имени" src="https://github.com/user-attachments/assets/74c4b12e-0ea4-431d-8052-2320cee3864b" />
 
 
 **Выводы:**
