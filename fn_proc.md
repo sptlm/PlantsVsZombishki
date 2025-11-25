@@ -1,4 +1,4 @@
-## PROCEDURE
+## Процедуры
 
 ### 1. Процедура создания покупки и заказа
 ```sql
@@ -31,7 +31,7 @@ FROM information_schema.routines
 WHERE routine_type = 'PROCEDURE' and routine_schema = 'marketplace';
 ```
 
-## FUNCTION
+## Функции
 
 ### 1.1 Функция для получения количества заказов для ПВЗ
 ```sql
