@@ -20,7 +20,34 @@ VALUES ('UserLogin123', 'hash', 'saltvalue');
 ```
 <img width="616" height="34" alt="изображение" src="https://github.com/user-attachments/assets/4bd36b2a-caf2-41cd-a219-787440ccebad" />
 
+### 2. Нормализация логина работника
 
+```sql
+-- Триггерная функция
+CREATE OR REPLACE FUNCTION marketplace.normalize_worker_login()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    NEW.login := TRIM(LOWER(NEW.login));
+    RETURN NEW;
+END;
+$$;
+
+-- триггер
+CREATE TRIGGER worker_normalize_login
+BEFORE INSERT OR UPDATE ON marketplace.workers
+FOR EACH ROW
+EXECUTE FUNCTION marketplace.normalize_worker_login();
+```
+
+Проверка:
+
+```sql
+INSERT INTO marketplace.workers (login, password_hash, salt)
+VALUES ('  NewWorker  ', 'hash_test', 'salt_test');
+```
+<img width="747" height="141" alt="Скриншот 02-12-2025 195855" src="https://github.com/user-attachments/assets/2a637880-dce4-45d6-9ebb-35738dad7e80" />
 
 ## OLD
 
@@ -49,6 +76,41 @@ UPDATE marketplace.items SET price = 600 WHERE name = 'TestItem';
 ```
 <img width="667" height="143" alt="изображение" src="https://github.com/user-attachments/assets/c858534a-50d2-42f4-b5d9-9c99a594ed10" />   
 <img width="497" height="32" alt="изображение" src="https://github.com/user-attachments/assets/af1be9ec-31d7-40d1-a25b-330dd1fe487c" />
+
+### 2. Удаление отзыва при отмене покупки
+
+```sql
+-- Триггерная функция
+CREATE OR REPLACE FUNCTION marketplace.delete_review_on_cancel()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF OLD.status = 'completed' AND NEW.status = 'cancelled' THEN
+        DELETE FROM marketplace.reviews
+        WHERE purchase_id = OLD.purchase_id;
+        
+        RAISE NOTICE 'Отзыв для покупки % был удалён из-за отмены', OLD.purchase_id;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$;
+
+-- триггер
+CREATE TRIGGER purchase_cancel_remove_review
+AFTER UPDATE ON marketplace.purchases
+FOR EACH ROW
+EXECUTE FUNCTION marketplace.delete_review_on_cancel();
+```
+
+Проверка:
+<img width="1052" height="148" alt="Скриншот 02-12-2025 200137" src="https://github.com/user-attachments/assets/8e3465c8-11a9-47b2-9b2d-987359488e08" />
+```sql
+UPDATE marketplace.purchases SET status = 'cancelled' WHERE purchase_id = 1;
+```
+<img width="1077" height="151" alt="Скриншот 02-12-2025 200211" src="https://github.com/user-attachments/assets/6160f0c2-0db9-4da1-8d89-53180b259f72" />
+
 
 
 
@@ -85,6 +147,45 @@ INSERT INTO marketplace.reviews (purchase_id, rating, description)
 VALUES (42, 1, 'Пушка бомба петарда, просто огонь, мне понравилось. Но у меня плохое настроение поэтому 1'); 
 ```
 <img width="698" height="159" alt="изображение" src="https://github.com/user-attachments/assets/53cda83f-71a1-4ec3-8439-18de18a0bb61" />
+
+### 2. Нормализация рейтинга
+
+```sql
+-- Триггерная функция
+CREATE OR REPLACE FUNCTION marketplace.normalize_review_rating()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF NEW.rating < 1 THEN
+        NEW.rating := 1;
+        RAISE NOTICE 'Рейтинг был изменён с % на 1 (минимальное значение)', NEW.rating;
+    END IF;
+    
+    IF NEW.rating > 5 THEN
+        NEW.rating := 5;
+        RAISE NOTICE 'Рейтинг был изменён c % на 5 (максимальное значение)',
+NEW.rating;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$;
+
+-- триггер
+CREATE TRIGGER review_normalize_rating
+BEFORE INSERT OR UPDATE ON marketplace.reviews
+FOR EACH ROW
+EXECUTE FUNCTION marketplace.normalize_review_rating();
+```
+
+Проверка:
+
+```sql
+INSERT INTO marketplace.reviews (purchase_id, rating, description)
+VALUES (4, 10, 'Слишком высокий рейтинг');
+```
+<img width="1071" height="151" alt="Скриншот 02-12-2025 200314" src="https://github.com/user-attachments/assets/43bdc641-71a3-4bc0-b4ee-c5423ac133a7" />
 
 
 ## AFTER
@@ -185,3 +286,35 @@ SELECT cron.schedule(
 <img width="2079" height="35" alt="изображение" src="https://github.com/user-attachments/assets/5b09f6ef-80be-4235-bc4a-38b015c4022c" />   
 
 <img width="616" height="38" alt="изображение" src="https://github.com/user-attachments/assets/f91295ae-b317-4926-a7c2-81978901496e" />
+
+### 2. Удаление отзывов для отменённых покупок раз в сутки
+
+```sql
+SELECT cron.schedule(
+    'cleanup_cancelled_reviews',
+    '0 4 * * *',
+    $$
+    DELETE FROM marketplace.reviews r
+    USING marketplace.purchases p
+    WHERE r.purchase_id = p.purchase_id
+      AND p.status = 'cancelled';
+    $$
+);
+```
+<img width="802" height="214" alt="Скриншот 02-12-2025 195613" src="https://github.com/user-attachments/assets/09745f79-ba2b-4e73-8fc2-3eac6eb30234" />
+<img width="731" height="221" alt="Скриншот 02-12-2025 195750" src="https://github.com/user-attachments/assets/883d474b-f3f7-4b0e-8501-19ce36b545b1" />
+
+
+
+***
+Список триггеров: 
+```sql
+select * from information_schema.triggers;
+```
+<img width="2334" height="176" alt="Скриншот 02-12-2025 195822" src="https://github.com/user-attachments/assets/a6767f93-c593-40ca-b4de-df80853c3f3f" />
+
+Список cron:
+```sql
+select * from cron.job;
+```
+<img width="1419" height="172" alt="Скриншот 02-12-2025 195714" src="https://github.com/user-attachments/assets/7f67a812-78ac-43a3-b0ae-8f51991a9792" />
