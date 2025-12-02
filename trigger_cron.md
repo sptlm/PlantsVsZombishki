@@ -408,6 +408,21 @@ SELECT cron.schedule(
 <img width="802" height="214" alt="Скриншот 02-12-2025 195613" src="https://github.com/user-attachments/assets/09745f79-ba2b-4e73-8fc2-3eac6eb30234" />
 <img width="731" height="221" alt="Скриншот 02-12-2025 195750" src="https://github.com/user-attachments/assets/883d474b-f3f7-4b0e-8501-19ce36b545b1" />
 
+### 3. Повышение цен на товары каждый месяц (для запроса поменяли на каждую минуту)
+```sql
+SELECT cron.schedule(
+    'monthly_price_increase',
+    '0 9 1 * *',
+    $$
+    UPDATE marketplace.items 
+    SET price = price * 1.01
+    WHERE price < 10000;
+    $$
+);
+```
+
+<img width="1429" height="109" alt="image_2025-12-02_23-31-33" src="https://github.com/user-attachments/assets/cc6efbf7-3289-45cb-997b-ea1ee2ed3ce6" />
+<img width="2111" height="153" alt="image_2025-12-02_23-32-16" src="https://github.com/user-attachments/assets/9f35ab6c-5bba-4c0e-94f5-649cc75b54cd" />
 
 
 ***
@@ -422,3 +437,10 @@ select * from information_schema.triggers;
 select * from cron.job;
 ```
 <img width="1419" height="172" alt="Скриншот 02-12-2025 195714" src="https://github.com/user-attachments/assets/7f67a812-78ac-43a3-b0ae-8f51991a9792" />
+
+запрос на просмотр выполнения кронов
+
+```sql
+select * from cron.job_run_details;
+```
+<img width="1683" height="595" alt="image_2025-12-02_23-19-36" src="https://github.com/user-attachments/assets/07e19fa1-b266-40b6-9dd1-494eb0a1a750" />
