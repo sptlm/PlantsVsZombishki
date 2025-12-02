@@ -218,6 +218,49 @@ INSERT INTO marketplace.purchases (item_id, buyer_id) VALUES (1, 1);
 ```
 <img width="468" height="148" alt="изображение" src="https://github.com/user-attachments/assets/7010be2d-7862-4d2f-9ee7-19e87f4b7253" />
 
+### 2. После добавления нового карьерного пути показать работников, которые на него претендуют
+
+```sql
+CREATE OR REPLACE FUNCTION marketplace.get_workers_to_promote()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+	worker_logins TEXT;
+	worker_record RECORD;
+BEGIN
+	worker_logins := '';
+    
+    FOR worker_record IN 
+        SELECT w.login
+        FROM marketplace.workers w
+        JOIN marketplace.worker_assignments wa ON wa.worker_id = w.worker_id
+        WHERE wa.work_id = NEW.current_profession_id
+    LOOP
+        worker_logins := worker_logins || worker_record.login || ', ';
+    END LOOP;
+	
+	RAISE NOTICE 'Работники для повышения с профессии % на %: %', 
+        NEW.current_profession_id, 
+        NEW.next_profession_id,
+        worker_logins;
+    
+    RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER after_insert_new_promotion_get_workers
+AFTER INSERT ON marketplace.career_path 
+FOR EACH ROW
+EXECUTE FUNCTION marketplace.get_workers_to_promote();
+```
+
+```sql
+INSERT INTO marketplace.career_path(current_profession_id, next_profession_id) VALUES (1, 11);
+```
+
+<img width="718" height="115" alt="image" src="https://github.com/user-attachments/assets/7bffdb6c-2eef-4ea1-958d-5b18e5fe8eb4" />
+
 
 ## ROW level
 
@@ -243,6 +286,39 @@ INSERT INTO marketplace.items (shop_id, name, category_id, price, description)
 VALUES (1, 'NoDescriptionItem', 1, 100, NULL);
 ```
 <img width="877" height="133" alt="изображение" src="https://github.com/user-attachments/assets/997c32b1-1886-4b72-a3a9-7c2cd3c7ecc3" />
+
+### 2. Для каждой строки, добавленной в career path проверить не резкое ли повышение
+
+```sql
+create or replace function marketplace.throw_bad_promotion()
+returns trigger
+language plpgsql
+AS $$
+DECLARE
+	cur_sal INT;
+	next_sal INT;
+BEGIN
+	SELECT salary INTO cur_sal FROM marketplace.profession p WHERE p.profession_id = NEW.current_profession_id;
+	SELECT salary INTO next_sal FROM marketplace.profession p WHERE p.profession_id = NEW.next_profession_id;
+	IF cur_sal * 2 < next_sal THEN
+		RAISE NOTICE 'Повышение зарплаты с должности с id % на должность с id % с зарплатами %,% соответсвенно слишком резкое',
+		NEW.current_profession_id, NEW.next_profession_id, cur_sal, next_sal;
+	END IF;
+	return NEW;
+END;
+$$;
+
+CREATE Trigger get_bad_promotions
+AFTER INSERT ON marketplace.career_path 
+FOR EACH ROW
+EXECUTE FUNCTION marketplace.throw_bad_promotion();
+```
+
+```sql
+INSERT INTO marketplace.career_path(current_profession_id, next_profession_id) VALUES (1, 3);
+```
+
+<img width="1292" height="135" alt="image" src="https://github.com/user-attachments/assets/416eb4fe-a0df-42e3-8065-6116132d7fc9" />
 
 
 ## STATEMENT level
