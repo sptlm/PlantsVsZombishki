@@ -21,6 +21,21 @@ BEGIN
 END;
 $$;
 ```
+```sql
+CALL marketplace.create_purchase_order(1, 1, 1);
+```
+До:  
+purchases:   
+<img width="631" height="153" alt="изображение" src="https://github.com/user-attachments/assets/c9ff2dcd-e5cd-42bf-b7c0-b4e21b721fc7" />   
+orders:   
+<img width="658" height="127" alt="изображение" src="https://github.com/user-attachments/assets/1e2c703a-a2f6-46cd-9e86-b6a07696917a" />   
+После:   
+purchases:   
+<img width="647" height="163" alt="изображение" src="https://github.com/user-attachments/assets/cc279044-b41c-4dc4-b6ec-340c0a6e3cf3" />   
+orders:   
+<img width="661" height="167" alt="изображение" src="https://github.com/user-attachments/assets/eeb04415-1110-4900-ac30-fbea3afa3021" />   
+
+
 ### 2. Процедура получения самого популярного товара в магазине
 ```sql
 CREATE or REPLACE Procedure marketplace.top_item(shop_id INT)
@@ -74,6 +89,8 @@ SELECT routine_name, routine_type
 FROM information_schema.routines
 WHERE routine_type = 'PROCEDURE' and routine_schema = 'marketplace';
 ```
+<img width="322" height="109" alt="изображение" src="https://github.com/user-attachments/assets/8f3aa72f-7d00-4cbe-a698-6f24eadb575c" />
+
 
 ## Функции
 
@@ -92,6 +109,13 @@ BEGIN
 END;
 $$;
 ```
+
+```sql
+SELECT pvz.pvz_id, pvz.address, marketplace.count_pvz_orders(pvz.pvz_id)
+FROM marketplace.pvz pvz
+```
+<img width="454" height="614" alt="изображение" src="https://github.com/user-attachments/assets/7f8d560d-3647-4684-b0a0-0d8129ac42ee" />
+
 ### 1.2 Функция для получения количества товаров в категории
 
 ```sql
@@ -155,6 +179,11 @@ BEGIN
 END;
 $$;
 ```
+```sql
+SELECT sh.shop_id, sh.name, marketplace.get_store_earnings(sh.shop_id)
+FROM marketplace.shops sh
+```
+<img width="441" height="471" alt="изображение" src="https://github.com/user-attachments/assets/011ba715-906d-4bbd-9f84-48a1a157b0f9" />
 
 ### 2.2 Функция (с переменной) для получения карьерного роста сотрудника (следующая должность)
 ```sql
@@ -230,6 +259,7 @@ SELECT routine_name, routine_type
 FROM information_schema.routines
 WHERE routine_type = 'FUNCTION' and routine_schema = 'marketplace';
 ```
+<img width="315" height="119" alt="изображение" src="https://github.com/user-attachments/assets/d629bb45-4558-49d5-8ee0-0173500ac441" />
 
 ## DO
 ### 1. Повышение зарплаты на процент (10%)
@@ -243,6 +273,10 @@ BEGIN
 END;
 $$;
 ```
+До:   
+<img width="401" height="361" alt="изображение" src="https://github.com/user-attachments/assets/f613970f-0f04-4c51-9562-1af0ba53268c" />   
+После:   
+<img width="404" height="325" alt="изображение" src="https://github.com/user-attachments/assets/c81967b7-df3f-4dd6-8cc5-537bc65ef152" />
 
 ### 2. Повышение цен на 10%
 ```sql
@@ -499,6 +533,8 @@ BEGIN
 END;
 $$;
 ```
+<img width="413" height="419" alt="изображение" src="https://github.com/user-attachments/assets/60bc9d68-0409-4d58-a6b2-b3300258090b" />
+
 
 ---
 
@@ -514,3 +550,4 @@ BEGIN
 END;
 $$;
 ```
+<img width="511" height="153" alt="изображение" src="https://github.com/user-attachments/assets/80871dcc-cc39-4158-a8ea-a2b296bb3ed3" />
