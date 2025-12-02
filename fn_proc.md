@@ -82,6 +82,8 @@ BEGIN
 END;
 $$;
 ```
+До: <img width="1034" height="211" alt="image" src="https://github.com/user-attachments/assets/aafd79b9-7fcb-44fc-8762-7621ffdbb394" />
+После CALL marketplace.discount_category_items(1, 10); : <img width="1041" height="216" alt="image" src="https://github.com/user-attachments/assets/ce409379-b848-4afe-94ad-337ba85750ee" />
 
 ---
 
@@ -156,6 +158,7 @@ BEGIN
 END;
 $$;
 ```
+<img width="435" height="228" alt="image" src="https://github.com/user-attachments/assets/da5e9091-7557-4108-a838-2e54a46f1d87" />
 
 ---
 
@@ -256,6 +259,7 @@ BEGIN
 END;
 $$;
 ```
+<img width="499" height="203" alt="image" src="https://github.com/user-attachments/assets/97a492d1-35c5-48f1-86bc-2767f7003013" />
 
 ---
 
@@ -329,6 +333,9 @@ BEGIN
 END;
 $$;
 ```
+До: <img width="1056" height="145" alt="image" src="https://github.com/user-attachments/assets/e6a43723-5639-46df-841b-ec257e41d341" />
+После: <img width="1047" height="173" alt="image" src="https://github.com/user-attachments/assets/8fb59da5-a682-4d49-b87c-89fba21caf01" />
+
 ---
 ## IF
 ### Функция для определения ценовой категории товара
@@ -424,18 +431,21 @@ BEGIN
     WHERE cp.current_profession_id = v_current_id
     LIMIT 1;
 
-    WHILE v_next_id IS NOT NULL 
+    WHILE v_next_id IS NOT NULL LOOP
+		v_current_id := v_next_id;
         SELECT cp.next_profession_id
         INTO v_next_id
         FROM marketplace.career_path cp
         WHERE cp.current_profession_id = v_current_id
         LIMIT 1;
-    END LOOP;
+	END LOOP;
 
     RETURN v_current_id;
 END;
 $$;
 ```
+<img width="543" height="198" alt="image" src="https://github.com/user-attachments/assets/fa08a632-77b3-42d1-a112-2008be72c22f" />
+
 ## EXCEPTION
 ### 1. EXCEPTION (та же Процедура: скидка по категории с проверкой через exception)
 
@@ -484,6 +494,7 @@ BEGIN
 END;
 $$;
 ```
+<img width="1023" height="73" alt="image" src="https://github.com/user-attachments/assets/f6ca600d-17e9-4bea-b51b-662a8fb2df52" />
 
 ### 2. EXCEPTION (та же Функция с переменной: последний карьерный рост для профессии, но с EXCEPTION)
 
@@ -530,6 +541,7 @@ BEGIN
 END;
 $$;
 ```
+<img width="937" height="71" alt="image" src="https://github.com/user-attachments/assets/f5cc5b3c-28a1-43de-8433-5fff55fca604" />
 
 ## RAISE
 ```sql
