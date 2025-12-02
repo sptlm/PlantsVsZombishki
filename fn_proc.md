@@ -47,7 +47,7 @@ BEGIN
 	SELECT i.name into popular_item
 	FROM marketplace.purchases p
 	JOIN marketplace.items i on p.item_id = i.item_id
-	WHERE i.shop_id = shop_id
+	WHERE i.shop_id = top_item.shop_id
 	GROUP BY i.item_id, i.name
 	ORDER BY COUNT(*) DESC
 	LIMIT 1;
@@ -55,6 +55,8 @@ BEGIN
 END;
 $$;
 ```
+<img width="614" height="112" alt="image" src="https://github.com/user-attachments/assets/1f2a97fb-5906-4b9e-be0a-c2bacbfce7f4" />
+
 ### 3. Процедура: понизить цены в категории на процент
 
 ```sql
@@ -127,11 +129,13 @@ BEGIN
     RETURN (
         SELECT COUNT(*) 
         FROM marketplace.items i
-        WHERE i.category_id = category_id
+        WHERE i.category_id = count_category_items.category_id
     );
 END;
 $$;
 ```
+<img width="247" height="80" alt="image" src="https://github.com/user-attachments/assets/4a1fa146-552e-40de-aca2-a1ff0c665c5a" />
+
 ### 1.3 Функция: средний рейтинг магазина
 
 ```sql
@@ -200,15 +204,15 @@ BEGIN
 	SELECT p.name, p.salary INTO current_prof, current_salary
 	FROM marketplace.worker_assignments wa
 	JOIN marketplace.profession p ON wa.work_id = p.profession_id
-	WHERE wa.worker_id = worker_id
+	WHERE wa.worker_id = get_next_profession.worker_id
 	LIMIT 1;
 
 	SELECT p.name, p.salary INTO next_prof, next_salary
     FROM marketplace.career_path cp
     JOIN marketplace.profession p ON cp.next_profession_id = p.profession_id
     WHERE cp.current_profession_id = (
-        SELECT work_id FROM marketplace.worker_assignments 
-        WHERE worker_id = worker_id LIMIT 1
+        SELECT work_id FROM marketplace.worker_assignments wa
+        WHERE wa.worker_id = get_next_profession.worker_id LIMIT 1
     )
     LIMIT 1;
 
@@ -220,6 +224,8 @@ BEGIN
 END;
 $$;
 ```
+<img width="592" height="80" alt="image" src="https://github.com/user-attachments/assets/b015336e-eae2-453f-b4ec-6f62e5d10532" />
+
 
 ### 2.3 Функция (с переменной): последний карьерный рост для профессии
 
@@ -292,6 +298,14 @@ BEGIN
 END;
 $$;
 ```
+До выполнения:
+<img width="1211" height="330" alt="image" src="https://github.com/user-attachments/assets/31fd0a13-728d-4d8f-b8dc-3dcd76b70f05" />
+После выполнения
+<img width="474" height="122" alt="image" src="https://github.com/user-attachments/assets/9445c23d-93c4-4495-b55b-fe874619f0c5" />
+<img width="1212" height="379" alt="image" src="https://github.com/user-attachments/assets/68a810b4-736f-4466-928f-fec94c88b220" />
+
+
+
 ### 3. DO‑блок: всем товарам без категории присвоить категорию `прочее` (id = 16)
 
 Важно: предполагается, что категория с `category_id = 16` уже существует и соответствует «прочее». Если её нет — нужно создать заранее.
@@ -326,7 +340,7 @@ AS $$
 DECLARE
 	price_of INT;
 BEGIN
-	SELECT price into price_of FROM marketplace.items i WHERE i.item_id = item_id;
+	SELECT price into price_of FROM marketplace.items i WHERE i.item_id = get_item_price_category.item_id;
 	IF price_of < 10000 THEN
 		return 'NEDOROGO';
 	ELSE
@@ -335,6 +349,9 @@ BEGIN
 END;
 $$;
 ```
+На товар с id - 1
+<img width="261" height="86" alt="image" src="https://github.com/user-attachments/assets/ecd5d708-b0c6-4ec8-997f-d03fddf74ff5" />
+
 ---
 ## CASE
 ### Получение более полного вида ценовой категории товара
@@ -347,7 +364,7 @@ DECLARE
 	price_of INT;
 	category TEXT;
 BEGIN
-	SELECT price into price_of FROM marketplace.items i WHERE i.item_id = item_id;
+	SELECT price into price_of FROM marketplace.items i WHERE i.item_id = get_item_price_fullcategory.item_id;
 
 	category := CASE
 		WHEN price_of < 1000 then 'Бюджетно'
@@ -358,6 +375,10 @@ BEGIN
 END;
 $$;
 ```
+Тоже с id - 1
+<img width="284" height="81" alt="image" src="https://github.com/user-attachments/assets/466e9868-cbec-4011-bac4-039e2227dfa7" />
+<img width="1152" height="28" alt="image" src="https://github.com/user-attachments/assets/1b64880b-abe9-4d68-91af-25aa09f61150" />
+
 ---
 ## WHILE
 ### 1. Do-блок для добавления 100 покупателей в бд
@@ -380,6 +401,9 @@ BEGIN
 END;
 $$;
 ```
+Они появились:
+<img width="752" height="631" alt="image" src="https://github.com/user-attachments/assets/4e31caf4-ccac-4fcc-9a9d-07f6f20de8db" />
+
 ### 2. WHILE (та же функция с переменной: последний карьерный рост для профессии, но с использованием while loop)
 
 ```sql
