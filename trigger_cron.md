@@ -343,6 +343,34 @@ TRUNCATE TABLE marketplace.buyers CASCADE;
 ```
 <img width="685" height="115" alt="изображение" src="https://github.com/user-attachments/assets/659e43c8-9d8f-40e4-bb1f-7002f3026df3" />
 
+### 2. Нельзя удалять товары перед парой бд
+
+```sql
+create or replace function marketplace.check_delete()
+returns trigger
+language plpgsql
+AS $$
+BEGIN
+	IF CURRENT_DATE = '2025-12-02' THEN
+            RAISE EXCEPTION 'Нельзя удалять товары перед сдачей бд';
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+create or replace trigger check_delete_items
+BEFORE delete on marketplace.items
+FOR EACH STATEMENT
+EXECUTE FUNCTION marketplace.check_delete();
+```
+
+```sql
+DELETE FROM marketplace.items i WHERE i.item_id = 57;
+```
+
+<img width="859" height="164" alt="image" src="https://github.com/user-attachments/assets/e16000af-6512-4ab5-af92-00aa9e3b64cc" />
+
+
 ## CRON
 
 ### 1. Каждую ночь в 04:00. Он должен переводить в статус cancelled все заказы из таблицы marketplace.orders, которые находятся в статусе created уже более 10 дней.
