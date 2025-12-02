@@ -179,4 +179,9 @@ SELECT cron.schedule(
   $$
 );
 ```
-![Без имени](https://github.com/user-attachments/assets/db6c47ef-a6e0-4f09-b07e-04056bf161be)
+![Без имени](https://github.com/user-attachments/assets/db6c47ef-a6e0-4f09-b07e-04056bf161be)   
+<img width="1418" height="112" alt="изображение" src="https://github.com/user-attachments/assets/7b0ca783-9e98-4e01-89ec-31274eb2e042" />   
+
+<img width="2079" height="35" alt="изображение" src="https://github.com/user-attachments/assets/5b09f6ef-80be-4235-bc4a-38b015c4022c" />   
+
+<img width="616" height="38" alt="изображение" src="https://github.com/user-attachments/assets/f91295ae-b317-4926-a7c2-81978901496e" />
