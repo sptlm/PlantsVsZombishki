@@ -79,9 +79,6 @@ SELECT
         END AS email
 FROM generate_series(1, 250000) AS g;
 
--- items: перед массовой вставкой лучше убрать FTS-индекс и восстановить после
-DROP INDEX IF EXISTS marketplace.items_fts_gin;
-
 -- items
 -- skewed: 70% товаров принадлежат top-10% shops (1000 из 10000), внутри top-диапазона Zipf-like через power(random(), 3)
 -- uniform: price равномерно по диапазону
@@ -117,11 +114,6 @@ SELECT
             'rating_bucket', (ARRAY['low','mid','high'])[1+floor(random()*3)::int]
     ) AS attributes
 FROM generate_series(1, 250000) AS g;
-
--- восстановил FTS индекс
-CREATE INDEX items_fts_gin
-    ON marketplace.items
-        USING GIN ((to_tsvector('russian', coalesce(name,'') || ' ' || coalesce(description,''))));
 
 -- purchases
 -- skewed 70/30: 70% покупок делают top-10% покупателей, плюс 70% покупок приходится на top-5% товаров

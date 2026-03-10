@@ -25,11 +25,11 @@ CREATE TABLE marketplace.workers (
 -- 4. Таблица покупателей (Расширена для заполнения)
 CREATE TABLE marketplace.buyers (
                                     buyer_id SERIAL PRIMARY KEY,
-                                    login VARCHAR(255) NOT NULL UNIQUE,                 -- высокая селективность (100% уникальных)
+                                    login VARCHAR(255) NOT NULL UNIQUE, -- высокая селективность (100% уникальных)
                                     password_hash VARCHAR(255) NOT NULL,
                                     salt VARCHAR(50) NOT NULL,
 
-                                    email VARCHAR(255)                                  -- высокая селективность (≈90–100% уникальных), 5–20% NULL при заливке
+                                    email VARCHAR(255)                  -- высокая селективность (≈90–100% уникальных), 5–20% NULL при заливке
 );
 
 -- 5. Таблица ПВЗ (без изменений)
@@ -57,18 +57,14 @@ CREATE TABLE marketplace.items (
                                    item_id SERIAL PRIMARY KEY,
                                    shop_id INT NOT NULL REFERENCES marketplace.shops(shop_id),
                                    name VARCHAR(255) NOT NULL,
-                                   description TEXT,                                   -- полнотекстовые данные
+                                   description TEXT,                               -- полнотекстовые данные
                                    category_id INT NOT NULL REFERENCES marketplace.category_of_item(category_id),
                                    price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
 
-                                   attributes JSONB NOT NULL DEFAULT '{}'::jsonb        -- JSONB
+                                   attributes JSONB NOT NULL DEFAULT '{}'::jsonb    -- JSONB
 );
 
 
--- Индекс под полнотекстовый поиск по name+description (expression GIN index на to_tsvector).
-CREATE INDEX items_fts_gin
-    ON marketplace.items
-        USING GIN ((to_tsvector('russian', coalesce(name,'') || ' ' || coalesce(description,''))));
 
 -- 9. Таблица назначений работников (без изменений)
 CREATE TABLE marketplace.worker_assignments (
@@ -101,9 +97,6 @@ CREATE TABLE marketplace.orders (
                                     delivered_at TIMESTAMP                                -- NULL для created/cancelled; NOT NULL для delivered (5–20%+ NULL)
 );
 
-CREATE INDEX IF NOT EXISTS orders_delivered_at_partial -- для анализа partial index
-    ON marketplace.orders(delivered_at)
-    WHERE delivered_at IS NOT NULL;
 
 
 -- 12. Таблица отзывов (без изменений)
@@ -113,3 +106,7 @@ CREATE TABLE marketplace.reviews (
                                      rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
                                      description TEXT
 );
+
+-- CREATE INDEX IF NOT EXISTS orders_delivered_at_partial -- для анализа partial index
+--     ON marketplace.orders(delivered_at)
+--     WHERE delivered_at IS NOT NULL;
