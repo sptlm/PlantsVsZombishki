@@ -94,3 +94,8 @@ DROP INDEX IF EXISTS marketplace.idx_items_price_btree;
 DROP INDEX IF EXISTS marketplace.idx_purchases_purchase_date_btree;
 DROP INDEX IF EXISTS marketplace.idx_purchases_buyer_id_btree;
 DROP INDEX IF EXISTS marketplace.idx_items_name_btree_tpo;
+
+DROP INDEX IF EXISTS marketplace.idx_items_price_hash;
+DROP INDEX IF EXISTS marketplace.idx_purchases_purchase_date_hash;
+DROP INDEX IF EXISTS marketplace.idx_purchases_buyer_id_hash;
+DROP INDEX IF EXISTS marketplace.idx_items_name_hash;
