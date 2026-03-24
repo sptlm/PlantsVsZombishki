@@ -310,6 +310,9 @@ SELECT pg_last_wal_receive_lsn(),
 
 ![img_5.png](images/img_5.png)
 
+Итоговая архитектура 
+![img.png](images/img_15.png)
+
 ---
 
 # Настроить Logical replication (изучить как делать – PUBLICATION/SUBSCRIPTION)
@@ -584,3 +587,7 @@ psql -h pg-subscriber -U admin -d pvz < schema.sql
 ```
 
 3. После этого включаем `PUBLICATION/SUBSCRIPTION` для догонки текущих изменений.
+
+Итоговая архитектура:
+
+![img.png](images/img_16.png)
