@@ -1,0 +1,102 @@
+version: '3.9'
+
+services:
+  hw7-master:
+    image: postgres:15
+    container_name: hw7-master
+    environment:
+      POSTGRES_DB: pvz_hw7
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin_pass
+    command: >
+      postgres
+      -c wal_level=logical
+      -c max_wal_senders=10
+      -c max_replication_slots=10
+      -c hot_standby=on
+    ports:
+      - "5551:5432"
+    volumes:
+      - hw7_master_data:/var/lib/postgresql/data
+      - ./init/master:/docker-entrypoint-initdb.d
+
+  hw7-publisher:
+    image: postgres:15
+    container_name: hw7-publisher
+    environment:
+      POSTGRES_DB: pvz_hw7
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin_pass
+    command: >
+      postgres
+      -c wal_level=logical
+      -c max_wal_senders=10
+      -c max_replication_slots=10
+    ports:
+      - "5552:5432"
+    volumes:
+      - hw7_publisher_data:/var/lib/postgresql/data
+      - ./init/publisher:/docker-entrypoint-initdb.d
+
+  hw7-subscriber:
+    image: postgres:15
+    container_name: hw7-subscriber
+    environment:
+      POSTGRES_DB: pvz_hw7
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin_pass
+    ports:
+      - "5553:5432"
+    volumes:
+      - hw7_subscriber_data:/var/lib/postgresql/data
+      - ./init/subscriber:/docker-entrypoint-initdb.d
+
+  hw7-shard1:
+    image: postgres:15
+    container_name: hw7-shard1
+    environment:
+      POSTGRES_DB: pvz_hw7
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin_pass
+    ports:
+      - "5554:5432"
+    volumes:
+      - hw7_shard1_data:/var/lib/postgresql/data
+      - ./init/shard1:/docker-entrypoint-initdb.d
+
+  hw7-shard2:
+    image: postgres:15
+    container_name: hw7-shard2
+    environment:
+      POSTGRES_DB: pvz_hw7
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin_pass
+    ports:
+      - "5555:5432"
+    volumes:
+      - hw7_shard2_data:/var/lib/postgresql/data
+      - ./init/shard2:/docker-entrypoint-initdb.d
+
+  hw7-router:
+    image: postgres:15
+    container_name: hw7-router
+    environment:
+      POSTGRES_DB: pvz_hw7
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin_pass
+    depends_on:
+      - hw7-shard1
+      - hw7-shard2
+    ports:
+      - "5556:5432"
+    volumes:
+      - hw7_router_data:/var/lib/postgresql/data
+      - ./init/router:/docker-entrypoint-initdb.d
+
+volumes:
+  hw7_master_data:
+  hw7_publisher_data:
+  hw7_subscriber_data:
+  hw7_shard1_data:
+  hw7_shard2_data:
+  hw7_router_data:
