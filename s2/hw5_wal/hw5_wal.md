@@ -53,7 +53,7 @@ SELECT pg_current_wal_lsn() AS lsn_after,
 
 ## 2. Сделать дамп БД и накатить его на новую чистую БД
 ### a. Dump только структуры базы
-```sql
+```bash
 pg_dump -h localhost -p 5444 -U admin -d pvz --schema-only -f hw5_pvz_schema.sql
 ```
 
