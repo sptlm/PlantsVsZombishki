@@ -1,0 +1,48 @@
+2026-05-05 17:15:34.199+0000 INFO  Logging config in use: File '/var/lib/neo4j/conf/user-logs.xml'
+2026-05-05 17:15:34.218+0000 INFO  The license agreement was accepted with environment variable NEO4J_ACCEPT_LICENSE_AGREEMENT=yes when the Software was started.
+
+
+2026-05-05 17:15:34.266+0000 INFO  Starting...
+2026-05-05 17:15:37.875+0000 INFO  ======== Neo4j 5.26.25 ========
+2026-05-05 17:15:37.918+0000 INFO  This instance is ServerId{1b883807} (1b883807-8bd6-42b1-bed8-3cea43cf6b2f)
+2026-05-05 17:15:37.950+0000 INFO  GDS license file: null
+2026-05-05 17:15:37.952+0000 INFO  GDS license state: unlicensed
+2026-05-05 17:15:37.955+0000 INFO  Prometheus: disabled
+2026-05-05 17:15:37.956+0000 WARN  GDS metrics disabled
+2026-05-05 17:15:37.962+0000 INFO  Progress tracking: enabled
+2026-05-05 17:15:37.967+0000 INFO  Memory usage guard: minimum estimate
+2026-05-05 17:15:37.972+0000 INFO  Register GDS Memory Facade...
+2026-05-05 17:15:37.974+0000 INFO  GDS Memory Facade registered.
+2026-05-05 17:15:37.991+0000 INFO  Building Graph Data Science extension...
+2026-05-05 17:15:37.995+0000 INFO  Register Graph Data Science...
+2026-05-05 17:15:37.997+0000 INFO  Graph Data Science registered.
+2026-05-05 17:15:37.998+0000 INFO  Register Metrics...
+2026-05-05 17:15:37.999+0000 INFO  Metrics registered.
+2026-05-05 17:15:38.001+0000 INFO  Register Model Catalog...
+2026-05-05 17:15:38.003+0000 INFO  Model Catalog registered.
+2026-05-05 17:15:38.004+0000 INFO  Register Task Registry Factory...
+2026-05-05 17:15:38.005+0000 INFO  Task Registry Factory registered.
+2026-05-05 17:15:38.006+0000 INFO  Register Task Store...
+2026-05-05 17:15:38.008+0000 INFO  Task Store registered.
+2026-05-05 17:15:38.009+0000 INFO  Register User Log Registry Factory...
+2026-05-05 17:15:38.010+0000 INFO  User Log Registry Factory registered.
+2026-05-05 17:15:38.011+0000 INFO  Graph Data Science extension built.
+2026-05-05 17:15:38.012+0000 INFO  Building Graph Data Science Extras extension...
+2026-05-05 17:15:38.014+0000 INFO  Register Graph Data Science Extras...
+2026-05-05 17:15:38.015+0000 INFO  Graph Data Science Extras registered.
+2026-05-05 17:15:38.016+0000 INFO  Graph Data Science Extras extension built.
+2026-05-05 17:15:38.395+0000 INFO  Resolved endpoints with LIST{endpoints:'[77254cc25975:5000]'} to '[77254cc25975:5000]'
+2026-05-05 17:15:39.772+0000 INFO  Resolved endpoints with LIST{endpoints:'[77254cc25975:5000]'} to '[77254cc25975:5000]'
+2026-05-05 17:16:01.298+0000 INFO  Default database 'neo4j' is created
+2026-05-05 17:16:15.214+0000 INFO  Sending metrics to CSV file at /var/lib/neo4j/metrics
+2026-05-05 17:16:15.257+0000 INFO  Anonymous Usage Data is being sent to Neo4j, see https://neo4j.com/docs/usage-data/
+2026-05-05 17:16:15.289+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2026-05-05 17:16:15.297+0000 INFO  Bolt (Routing) enabled on 0.0.0.0:7688.
+2026-05-05 17:16:16.823+0000 INFO  HTTP enabled on 0.0.0.0:7474.
+2026-05-05 17:16:16.825+0000 INFO  Remote interface available at http://localhost:7474/
+2026-05-05 17:16:16.831+0000 INFO  id: 15095E4940C64574E2E4E4CBBCBE1291ED440769FC992158F6E9571D50038EAD
+2026-05-05 17:16:16.832+0000 INFO  name: system
+2026-05-05 17:16:16.833+0000 INFO  creationDate: 2026-05-05T17:15:41.005Z
+2026-05-05 17:16:16.834+0000 INFO  Started.
+2026-05-05 17:23:26.104+0000 INFO  Neo4j Server shutdown initiated by request
+2026-05-05 17:23:26.105+0000 INFO  Stopping...
