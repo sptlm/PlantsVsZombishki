@@ -1,0 +1,90 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: hw8-postgres-broker
+    environment:
+      POSTGRES_DB: marketplace_queue
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin_pass
+    ports:
+      - "5548:5432"
+    command: >
+      postgres
+      -c shared_buffers=256MB
+      -c work_mem=16MB
+      -c autovacuum=on
+      -c log_autovacuum_min_duration=0
+    volumes:
+      - hw8_pg_data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d marketplace_queue"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  producer:
+    build: .
+    environment:
+      ROLE: producer
+      DB_URL: jdbc:postgresql://postgres:5432/marketplace_queue
+      DB_USER: admin
+      DB_PASSWORD: admin_pass
+      PRODUCER_RATE_PER_SECOND: 250
+      PRODUCER_CRITICAL_PERCENT: 20
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  worker-1:
+    build: .
+    environment:
+      ROLE: worker
+      WORKER_ID: worker-1
+      DB_URL: jdbc:postgresql://postgres:5432/marketplace_queue
+      DB_USER: admin
+      DB_PASSWORD: admin_pass
+      WORKER_FAIL_PERCENT: 6
+      WORKER_BACKOFF_SECONDS: 300
+      WORKER_NORMAL_MIN_MS: 55
+      WORKER_NORMAL_MAX_MS: 90
+      WORKER_CRITICAL_MIN_MS: 20
+      WORKER_CRITICAL_MAX_MS: 35
+      WORKER_LISTEN_TIMEOUT_MS: 60000
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  worker-2:
+    build: .
+    environment:
+      ROLE: worker
+      WORKER_ID: worker-2
+      DB_URL: jdbc:postgresql://postgres:5432/marketplace_queue
+      DB_USER: admin
+      DB_PASSWORD: admin_pass
+      WORKER_FAIL_PERCENT: 6
+      WORKER_BACKOFF_SECONDS: 300
+      WORKER_NORMAL_MIN_MS: 55
+      WORKER_NORMAL_MAX_MS: 90
+      WORKER_CRITICAL_MIN_MS: 20
+      WORKER_CRITICAL_MAX_MS: 35
+      WORKER_LISTEN_TIMEOUT_MS: 60000
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  monitor:
+    build: .
+    environment:
+      ROLE: monitor
+      DB_URL: jdbc:postgresql://postgres:5432/marketplace_queue
+      DB_USER: admin
+      DB_PASSWORD: admin_pass
+      MONITOR_INTERVAL_SECONDS: 5
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  hw8_pg_data:
